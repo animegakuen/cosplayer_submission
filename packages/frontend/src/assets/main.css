@@ -1,0 +1,23 @@
+@import './base.css';
+
+#app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 100dvh;
+  width: 100dvw;
+}
+
+a {
+  text-decoration: none;
+  color: var(--ctp-frappe-mauve);
+  transition: 0.4s;
+  padding: 3px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: rgba(var(--ctp-frappe-mauve-rgb) / 0.2);
+  }
+}

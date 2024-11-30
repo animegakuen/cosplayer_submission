@@ -1,0 +1,6 @@
+# Ignore Typescript outdir
+bin/
+
+# Ignore cosplayer and jury data
+cosplayers.json
+jury.json
