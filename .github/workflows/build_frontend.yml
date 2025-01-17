@@ -1,0 +1,19 @@
+name: "Build frontend"
+
+on:
+  push:
+    paths:
+      - 'packages/frontend'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+
+      - name: Building package
+        run: nix build
