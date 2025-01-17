@@ -14,6 +14,11 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in
       {
+        packages = {
+          default = pkgs.callPackage ./nix/frontend.nix { };
+          backend = pkgs.callPackage ./nix/backend.nix { };
+        };
+
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
             nodejs_22

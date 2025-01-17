@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf bin; tsc -p ./",
-    "start": "cd bin; node index.js"
+    "build": "rm -rf dist; tsc -p ./",
+    "start": "bin/start.js"
   },
   "engines": {
     "node": ">=20.0.0"
