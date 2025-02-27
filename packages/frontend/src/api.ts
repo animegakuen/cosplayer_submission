@@ -19,19 +19,21 @@ export interface Vote {
 }
 
 export class Api {
-  static API_URL = "http://192.168.0.100:3000";
+  static API_URL = "http://api.cosplay.thewizard.link";
 
   static fetch(endpoint: string, options?: RequestInit) {
     return fetch(`${Api.API_URL}/${endpoint}`, options);
   }
 
   static async getCosplayers(): Promise<Cosplayer[]>;
-  static async getCosplayers(
-    query: { order?: number; name?: string },
-  ): Promise<Cosplayer>;
-  static async getCosplayers(
-    query?: { order?: number; name?: string },
-  ): Promise<Cosplayer[] | Cosplayer> {
+  static async getCosplayers(query: {
+    order?: number;
+    name?: string;
+  }): Promise<Cosplayer>;
+  static async getCosplayers(query?: {
+    order?: number;
+    name?: string;
+  }): Promise<Cosplayer[] | Cosplayer> {
     const queryString: string[] = [];
 
     if (query?.order) queryString.push(`order=${query.order}`);
@@ -66,7 +68,7 @@ export class Api {
       throw new Error(`Failed fetching jury: ${result.text()}`);
     }
 
-    return await result.json() as Juror[];
+    return (await result.json()) as Juror[];
   }
 
   static async sendVote(juror: Juror, vote: Vote): Promise<void> {
