@@ -6,9 +6,7 @@ import { join } from "path";
 const app = AppSingleton.instance.app;
 
 const fetchCosplayers: () => Promise<Cosplayer[]> = async () => {
-  return JSON.parse(
-    (await readFile("./cosplayers.json")).toString(),
-  ) as Cosplayer[];
+  return JSON.parse((await readFile("./cosplayers.json")).toString()) as Cosplayer[];
 };
 
 const isCosplayer = (obj: any): obj is Cosplayer => {
@@ -22,53 +20,50 @@ const isCosplayer = (obj: any): obj is Cosplayer => {
   );
 };
 
-app.get<{ Querystring: { order?: string; name?: string } }>(
-  "/cosplayers",
-  async (req, res) => {
-    const cosplayers = await fetchCosplayers();
+app.get<{ Querystring: { order?: string; name?: string } }>("/cosplayers", async (req, res) => {
+  const cosplayers = await fetchCosplayers();
 
-    if (!req.query.order && !req.query.name) {
-      res.send(cosplayers);
+  if (!req.query.order && !req.query.name) {
+    res.send(cosplayers);
+    return;
+  }
+
+  const name = req.query.name;
+  const order = req.query.order;
+
+  if (name) {
+    const cosplayer = cosplayers.find((c) => c.name === name);
+
+    if (!cosplayer) {
+      res.code(404).send();
       return;
     }
 
-    const name = req.query.name;
-    const order = req.query.order;
+    res.send(cosplayer);
+    return;
+  }
 
-    if (name) {
-      const cosplayer = cosplayers.find((c) => c.name === name);
+  if (order) {
+    const orderNumber = Number.parseInt(order);
 
-      if (!cosplayer) {
-        res.code(404).send();
-        return;
-      }
-
-      res.send(cosplayer);
+    if (!orderNumber) {
+      res.code(400).send();
       return;
     }
 
-    if (order) {
-      const orderNumber = Number.parseInt(order);
+    const cosplayer = cosplayers.find((c) => {
+      return c.order === orderNumber;
+    });
 
-      if (!orderNumber) {
-        res.code(400).send();
-        return;
-      }
-
-      const cosplayer = cosplayers.find((c) => {
-        return c.order === orderNumber;
-      });
-
-      if (!cosplayer) {
-        res.code(404).send();
-        return;
-      }
-
-      res.send(cosplayer);
+    if (!cosplayer) {
+      res.code(404).send();
       return;
     }
-  },
-);
+
+    res.send(cosplayer);
+    return;
+  }
+});
 
 app.post<{ Body: Cosplayer }>("/cosplayers", async (req, res) => {
   const cosplayerData = await fetchCosplayers();
@@ -87,10 +82,7 @@ app.post<{ Body: Cosplayer }>("/cosplayers", async (req, res) => {
   cosplayer.order = cosplayerData.length + 1;
   cosplayerData.push(cosplayer);
 
-  await writeFile(
-    "./cosplayers.json",
-    JSON.stringify(cosplayerData, null, "  "),
-  );
+  await writeFile("./cosplayers.json", JSON.stringify(cosplayerData, null, "  "));
 
   res.code(200).send();
 });
