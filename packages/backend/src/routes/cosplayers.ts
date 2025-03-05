@@ -12,12 +12,14 @@ const fetchCosplayers: () => Promise<Cosplayer[]> = async () => {
 };
 
 const isCosplayer = (obj: any): obj is Cosplayer => {
-  return obj.name !== undefined &&
+  return (
+    obj.name !== undefined &&
     obj.characterName !== undefined &&
     obj.images !== undefined &&
     obj.nickname !== undefined &&
     obj.origin !== undefined &&
-    obj.phoneNumber !== undefined;
+    obj.phoneNumber !== undefined
+  );
 };
 
 app.get<{ Querystring: { order?: string; name?: string } }>(
@@ -68,30 +70,27 @@ app.get<{ Querystring: { order?: string; name?: string } }>(
   },
 );
 
-app.post<{ Body: Cosplayer }>(
-  "/cosplayers",
-  async (req, res) => {
-    const cosplayerData = await fetchCosplayers();
+app.post<{ Body: Cosplayer }>("/cosplayers", async (req, res) => {
+  const cosplayerData = await fetchCosplayers();
 
-    const cosplayer = req.body;
-    if (!isCosplayer(cosplayer)) {
-      res.code(400).send("Wrong cosplayer object.");
-      return;
-    }
+  const cosplayer = req.body;
+  if (!isCosplayer(cosplayer)) {
+    res.code(400).send("Wrong cosplayer object.");
+    return;
+  }
 
-    if (cosplayerData.some((c) => c.name === cosplayer.name)) {
-      res.code(403).send("Um cosplayer com este nome já existe.");
-      return;
-    }
+  if (cosplayerData.some((c) => c.name === cosplayer.name)) {
+    res.code(403).send("Um cosplayer com este nome já existe.");
+    return;
+  }
 
-    cosplayer.order = cosplayerData.length + 1;
-    cosplayerData.push(cosplayer);
+  cosplayer.order = cosplayerData.length + 1;
+  cosplayerData.push(cosplayer);
 
-    await writeFile(
-      join(__dirname, "..", "..", "cosplayers.json"),
-      JSON.stringify(cosplayerData, null, "  "),
-    );
+  await writeFile(
+    join(__dirname, "..", "..", "cosplayers.json"),
+    JSON.stringify(cosplayerData, null, "  "),
+  );
 
-    res.code(200).send();
-  },
-);
+  res.code(200).send();
+});

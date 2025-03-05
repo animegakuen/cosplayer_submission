@@ -28,19 +28,21 @@ app.get("/winners", async (_req, res) => {
 
   let votes: Vote[] = [];
 
-  jury.flatMap((j) => j.votes).forEach((vote) => {
-    if (!vote) return;
+  jury
+    .flatMap((j) => j.votes)
+    .forEach((vote) => {
+      if (!vote) return;
 
-    const inArray = votes.find((v) => v.name === vote.name);
+      const inArray = votes.find((v) => v.name === vote.name);
 
-    if (inArray) {
-      inArray.score += vote.score;
-    } else {
-      votes.push(vote);
-    }
-  });
+      if (inArray) {
+        inArray.score += vote.score;
+      } else {
+        votes.push(vote);
+      }
+    });
 
-  votes.forEach((v) => v.score = v.score / jury.length);
+  votes.forEach((v) => (v.score = v.score / jury.length));
   votes = votes.sort((a, b) => b.score - a.score);
 
   res.send(votes);
