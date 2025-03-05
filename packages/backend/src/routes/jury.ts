@@ -6,9 +6,7 @@ import { Juror, Vote } from "../types/Juror";
 const app = AppSingleton.instance.app;
 
 const fetchJury: () => Promise<Juror[]> = async () => {
-  return JSON.parse(
-    (await readFile(join(__dirname, "..", "..", "jury.json"))).toString(),
-  ) as Juror[];
+  return JSON.parse((await readFile("./jury.json")).toString()) as Juror[];
 };
 
 app.get("/jury", async (_req, res) => {
@@ -76,10 +74,7 @@ app.post<{ Body: { juror: Juror; vote: Vote } }>("/vote", async (req, res) => {
 
   foundJuror.votes.push(vote);
 
-  await writeFile(
-    join(__dirname, "..", "..", "jury.json"),
-    JSON.stringify(jury, null, "  "),
-  );
+  await writeFile("./jury.json", JSON.stringify(jury, null, "  "));
 
   res.code(200).send();
 });

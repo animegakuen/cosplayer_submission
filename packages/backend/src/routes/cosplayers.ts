@@ -7,7 +7,7 @@ const app = AppSingleton.instance.app;
 
 const fetchCosplayers: () => Promise<Cosplayer[]> = async () => {
   return JSON.parse(
-    (await readFile(join(__dirname, "..", "..", "cosplayers.json"))).toString(),
+    (await readFile("./cosplayers.json")).toString(),
   ) as Cosplayer[];
 };
 
@@ -88,7 +88,7 @@ app.post<{ Body: Cosplayer }>("/cosplayers", async (req, res) => {
   cosplayerData.push(cosplayer);
 
   await writeFile(
-    join(__dirname, "..", "..", "cosplayers.json"),
+    "./cosplayers.json",
     JSON.stringify(cosplayerData, null, "  "),
   );
 
