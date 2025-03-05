@@ -1,7 +1,6 @@
 import { AppSingleton } from "../App";
 import { Cosplayer } from "../types/Cosplayer";
 import { readFile, writeFile } from "fs/promises";
-import { join } from "path";
 
 const app = AppSingleton.instance.app;
 

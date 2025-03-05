@@ -1,6 +1,5 @@
 import { AppSingleton } from "../App";
 import { readFile, writeFile } from "fs/promises";
-import { join } from "path";
 import { Juror, Vote } from "../types/Juror";
 
 const app = AppSingleton.instance.app;
