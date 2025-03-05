@@ -19,7 +19,7 @@ export interface Vote {
 }
 
 export class Api {
-  static API_URL = "http://api.cosplay.thewizard.link";
+  static API_URL = "https://api.cosplay.thewizard.link";
 
   static fetch(endpoint: string, options?: RequestInit) {
     return fetch(`${Api.API_URL}/${endpoint}`, options);
