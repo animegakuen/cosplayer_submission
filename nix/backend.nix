@@ -28,6 +28,8 @@ stdenv.mkDerivation rec {
   buildPhase = ''
     runHook preBuild
 
+    patchShebangs packages/backend/bin/start.js
+
     pnpm --filter=backend build
 
     runHook postBuild
