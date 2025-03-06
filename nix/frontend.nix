@@ -5,8 +5,8 @@
 }:
 
 stdenv.mkDerivation rec {
-  pname = "cosplayer_submission-frontend";
-  version = "0-unstable-2025-01-17";
+  pname = "animegakuen-cosplay-frontend";
+  version = "0-unstable-2025-03-05";
   src = ../.;
 
   nativeBuildInputs = [
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
     pnpm_9.configHook
   ];
 
-  pnpmWorkspaces = [ "frontend" ];
+  pnpmWorkspaces = [ "@animegakuen/cosplay-frontend" ];
   pnpmDeps = pnpm_9.fetchDeps {
     inherit
       pname
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
   buildPhase = ''
     runHook preBuild
 
-    pnpm --filter=frontend build
+    pnpm --filter "@animegakuen/cosplay-frontend" build
 
     runHook postBuild
   '';

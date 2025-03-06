@@ -5,8 +5,8 @@
 }:
 
 stdenv.mkDerivation rec {
-  pname = "cosplayer_submission-backend";
-  version = "0-unstable-2025-01-17";
+  pname = "animegakuen-cosplay-backend";
+  version = "0-unstable-2025-03-05";
   src = ../.;
 
   nativeBuildInputs = [
@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
     pnpm_9.configHook
   ];
 
-  pnpmWorkspaces = [ "backend" ];
+  pnpmWorkspaces = [ "@animegakuen/cosplay-backend" ];
   pnpmDeps = pnpm_9.fetchDeps {
     inherit
       pname
@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
 
     patchShebangs packages/backend/bin/start.js
 
-    pnpm --filter=backend build
+    pnpm --filter "@animegakuen/cosplay-backend" build
 
     runHook postBuild
   '';

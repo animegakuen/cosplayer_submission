@@ -2,8 +2,9 @@ name: "Build frontend"
 
 on:
   push:
+    branches: [ main ]
     paths:
-      - 'packages/frontend'
+      - 'packages/frontend/**'
 
 jobs:
   build:

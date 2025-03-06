@@ -1,8 +1,9 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
+  "name": "@animegakuen/cosplay-backend",
+  "version": "0.0.0",
+  "private": true,
   "description": "",
-  "main": "index.js",
+  "main": "bin/start.js",
   "scripts": {
     "build": "rm -rf dist; tsc -p ./",
     "start": "bin/start.js"
