@@ -67,7 +67,7 @@ app.get<{ Querystring: { order?: string; name?: string } }>("/cosplayers", async
 });
 
 app.post<{ Body: Cosplayer }>("/cosplayers", async (req, res) => {
-  const cosplayerData = await fetchCosplayers();
+  let cosplayerData = await fetchCosplayers();
 
   const cosplayer = req.body;
   if (!isCosplayer(cosplayer)) {
@@ -75,13 +75,18 @@ app.post<{ Body: Cosplayer }>("/cosplayers", async (req, res) => {
     return;
   }
 
-  if (cosplayerData.some((c) => c.name === cosplayer.name)) {
-    res.code(403).send("Um cosplayer com este nome já existe.");
-    return;
-  }
+  if (cosplayerData.some((c) => c.phoneNumber === cosplayer.phoneNumber)) {
+    cosplayerData = cosplayerData.map((c) => {
+      if (c.phoneNumber === cosplayer.phoneNumber) {
+        return { ...cosplayer, order: c.order };
+      }
 
-  cosplayer.order = cosplayerData.length + 1;
-  cosplayerData.push(cosplayer);
+      return c;
+    });
+  } else {
+    cosplayer.order = cosplayerData.length + 1;
+    cosplayerData.push(cosplayer);
+  }
 
   await writeFile("./cosplayers.json", JSON.stringify(cosplayerData, null, "  "));
 

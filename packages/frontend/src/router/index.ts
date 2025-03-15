@@ -9,8 +9,12 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      alias: "/submit",
-      name: "home",
+      redirect: { name: "submit" },
+    },
+    {
+      path: "/submit/:order?",
+      name: "submit",
+      props: true,
       component: SubmitView,
     },
     {

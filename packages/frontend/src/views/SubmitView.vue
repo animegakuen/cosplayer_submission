@@ -2,6 +2,10 @@
 import { ref, type Ref } from "vue";
 import { Api, type Cosplayer } from "@/api";
 
+const props = defineProps({
+  order: Number,
+});
+
 const files: Ref<{ file: File; base64Url: string }[]> = ref([]);
 
 const displayError = ref(false);
@@ -20,6 +24,22 @@ const cosplayer = ref<Cosplayer & { valid: boolean }>({
   origin: "",
   phoneNumber: "",
 });
+
+if (props.order) {
+  Api.getCosplayers({ order: props.order }).then((c) => {
+    cosplayer.value = {
+      valid: true,
+      characterName: c.characterName,
+      document: c.document,
+      email: c.email,
+      images: c.images,
+      name: c.name,
+      nickname: c.nickname,
+      origin: c.origin,
+      phoneNumber: c.phoneNumber,
+    };
+  });
+}
 
 const previewFiles = (event: Event) => {
   const eventFiles = (event.target as HTMLInputElement).files;
