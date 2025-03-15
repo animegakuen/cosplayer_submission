@@ -2,7 +2,7 @@
 import { Api, type Cosplayer, type Juror } from "@/api";
 import { ref } from "vue";
 
-const order = ref<number>(1);
+const order = ref<number>(0);
 const jury = ref<Juror[]>([]);
 const cosplayer = ref<Cosplayer>();
 const vote = ref<number>();
@@ -13,17 +13,15 @@ const selectedJuror = ref<Juror | undefined>();
 
 const selectJuror = (juror: Juror) => (selectedJuror.value = juror);
 
-const selectNextCosplayer = (previousOrder?: number): void => {
-  const currentOrder = previousOrder ?? order.value + 1;
+const selectNextCosplayer = (): void => {
+  const currentOrder = order.value + 1;
 
-  Api.getCosplayers({ order: currentOrder })
+  displayError.value = false;
+
+  Api.getCosplayers({ fromOrder: currentOrder, confirmedOnly: true })
     .then((c) => {
-      if (!c.confirmed) selectNextCosplayer(currentOrder + 1);
-      else {
-        cosplayer.value = c;
-        order.value = c.order!;
-        console.log(order.value);
-      }
+      cosplayer.value = c;
+      order.value = c.order!;
     })
     .catch(() => (cosplayer.value = undefined));
 };
@@ -34,12 +32,14 @@ const sendVote = () => {
     return;
   }
 
-  Api.sendVote(selectedJuror.value!, { name: cosplayer.value!.name, score: vote.value! }).catch((err) => {
-    displayError.value = false;
-    errorMessage.value = err;
-  });
-
-  selectNextCosplayer();
+  Api.sendVote(selectedJuror.value!, { name: cosplayer.value!.name, score: vote.value! })
+    .then(() => {
+      selectNextCosplayer();
+    })
+    .catch((err) => {
+      displayError.value = true;
+      errorMessage.value = err;
+    });
 };
 
 Api.getJury().then((j) => (jury.value = j));
