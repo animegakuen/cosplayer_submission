@@ -22,50 +22,82 @@ const isCosplayer = (obj: any): obj is Cosplayer => {
   );
 };
 
-app.get<{ Querystring: { order?: string; name?: string } }>("/cosplayers", async (req, res) => {
-  const cosplayers = await fetchCosplayers();
+app.get<{ Querystring: { order?: string; name?: string; fromOrder?: string; confirmedOnly?: string } }>(
+  "/cosplayers",
+  async (req, res) => {
+    let cosplayerData = await fetchCosplayers();
 
-  if (!req.query.order && !req.query.name) {
-    res.send(cosplayers);
-    return;
-  }
+    const name = req.query.name;
+    const order = req.query.order;
+    const fromOrder = req.query.fromOrder;
+    const confirmedOnly = req.query.confirmedOnly === "true" ? true : false;
 
-  const name = req.query.name;
-  const order = req.query.order;
+    if (!order && !name && !fromOrder) {
+      if (confirmedOnly) cosplayerData = cosplayerData.filter((c) => c.confirmed);
 
-  if (name) {
-    const cosplayer = cosplayers.find((c) => c.name === name);
-
-    if (!cosplayer) {
-      res.code(404).send();
+      res.send(cosplayerData);
       return;
     }
 
-    res.send(cosplayer);
-    return;
-  }
+    if (name) {
+      const cosplayer = cosplayerData.find((c) => c.name === name);
 
-  if (order) {
-    const orderNumber = Number.parseInt(order);
+      if (!cosplayer) {
+        res.code(404).send();
+        return;
+      }
 
-    if (!orderNumber) {
-      res.code(400).send();
+      res.send(cosplayer);
       return;
     }
 
-    const cosplayer = cosplayers.find((c) => {
-      return c.order === orderNumber;
-    });
+    if (order) {
+      const orderNumber = Number.parseInt(order);
 
-    if (!cosplayer) {
-      res.code(404).send();
+      if (!orderNumber) {
+        res.code(400).send();
+        return;
+      }
+
+      const cosplayer = cosplayerData.find((c) => {
+        return c.order === orderNumber;
+      });
+
+      if (!cosplayer) {
+        res.code(404).send();
+        return;
+      }
+
+      res.send(cosplayer);
       return;
     }
 
-    res.send(cosplayer);
-    return;
-  }
-});
+    if (fromOrder) {
+      const fromOrderNumber = Number.parseInt(fromOrder);
+
+      const findNextCosplayer = (nextOrder: number) => {
+        if (nextOrder + 1 > cosplayerData.length) {
+          res.code(404).send();
+          return;
+        }
+
+        const nextCosplayer = cosplayerData.find((c) => c.order === nextOrder);
+
+        if (!nextCosplayer || (!nextCosplayer.confirmed && confirmedOnly)) return findNextCosplayer(nextOrder + 1);
+
+        return nextCosplayer;
+      };
+
+      if (fromOrderNumber + 1 > cosplayerData.length) {
+        res.code(404).send();
+        return;
+      }
+
+      res.send(findNextCosplayer(fromOrderNumber));
+      return;
+    }
+  },
+);
 
 app.get<{ Querystring: { order?: string } }>("/confirm", async (req, res) => {
   let cosplayerData = await fetchCosplayers();
