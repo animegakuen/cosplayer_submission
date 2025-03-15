@@ -8,14 +8,28 @@ const props = defineProps({
 
 const cosplayers = ref<Cosplayer[]>([]);
 
-Api.getCosplayers().then((c) => {
-  cosplayers.value = c
-    .filter((c) => (props.all ? true : c.confirmed))
-    .sort((a, b) => {
-      if (a.order! > b.order!) return 1;
-      else return -1;
-    });
-});
+const loadCosplayers = (nextOrder?: number) => {
+  const orderNumber = nextOrder ? nextOrder + 1 : 1;
+
+  Api.getCosplayers({ fromOrder: orderNumber, confirmedOnly: !props.all })
+    .then((c) => {
+      cosplayers.value.push(c);
+      loadCosplayers(c.order!);
+    })
+    .catch(() => null);
+};
+
+const confirmCosplayer = (order: number) => {
+  Api.confirmCosplayer(order)
+    .then(() => {
+      cosplayers.value.forEach((c) => {
+        if (c.order === order) c.confirmed = true;
+      });
+    })
+    .catch(console.error);
+};
+
+loadCosplayers();
 </script>
 
 <template>
@@ -44,6 +58,18 @@ Api.getCosplayers().then((c) => {
             <v-col>
               <h5 class="text-h5">Origem</h5>
               {{ cosplayer.origin }}
+            </v-col>
+          </v-row>
+
+          <v-row v-if="props.all">
+            <v-col>
+              <h5 class="text-h5">Confirmado</h5>
+              {{ cosplayer.confirmed ? "Sim" : "Não" }}
+            </v-col>
+
+            <v-col>
+              <v-btn text="Confirmar" :disabled="cosplayer.confirmed" type="submit"
+                @click="() => confirmCosplayer(cosplayer.order!)"></v-btn>
             </v-col>
           </v-row>
 
