@@ -6,8 +6,8 @@ const order = ref<number>(0);
 const jury = ref<Juror[]>([]);
 const cosplayer = ref<Cosplayer>();
 const vote = ref<number>();
-const errorMessage = ref("");
-const displayError = ref(false);
+
+const disabledButtons = ref(false);
 
 const selectedJuror = ref<Juror | undefined>();
 
@@ -16,12 +16,11 @@ const selectJuror = (juror: Juror) => (selectedJuror.value = juror);
 const selectNextCosplayer = (): void => {
   const currentOrder = order.value + 1;
 
-  displayError.value = false;
-
   Api.getCosplayers({ fromOrder: currentOrder, confirmedOnly: true })
     .then((c) => {
       cosplayer.value = c;
       order.value = c.order!;
+      disabledButtons.value = false;
     })
     .catch(() => (cosplayer.value = undefined));
 };
@@ -32,14 +31,11 @@ const sendVote = () => {
     return;
   }
 
-  Api.sendVote(selectedJuror.value!, { name: cosplayer.value!.name, score: vote.value! })
-    .then(() => {
-      selectNextCosplayer();
-    })
-    .catch((err) => {
-      displayError.value = true;
-      errorMessage.value = err;
-    });
+  disabledButtons.value = true;
+
+  Api.sendVote(selectedJuror.value!, { name: cosplayer.value!.name, score: vote.value! }).catch(console.error);
+
+  selectNextCosplayer();
 };
 
 Api.getJury().then((j) => (jury.value = j));
@@ -47,7 +43,6 @@ selectNextCosplayer();
 </script>
 
 <template>
-  <v-alert :text="errorMessage" title="Erro ao votar" type="error" v-if="displayError" />
   <v-container v-if="selectedJuror === undefined">
     <v-row v-for="juror in jury" :key="juror.name">
       <v-col class="jurorButton">
@@ -107,12 +102,8 @@ selectNextCosplayer();
       <v-row>
         <div class="buttons">
           <v-number-input label="Pontuação" control-variant="split" :min="0" :max="10" v-model="vote" />
-          <v-btn size="large" @click="sendVote">Enviar</v-btn>
+          <v-btn size="large" :disabled="disabledButtons" @click="sendVote">Enviar</v-btn>
         </div>
-      </v-row>
-
-      <v-row>
-        <v-btn size="large" @click="() => selectNextCosplayer()">Pular</v-btn>
       </v-row>
     </span>
 
