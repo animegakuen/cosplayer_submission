@@ -10,9 +10,11 @@ const fetchCosplayers: () => Promise<Cosplayer[]> = async () => {
 
 const isCosplayer = (obj: any): obj is Cosplayer => {
   return (
-    obj.name !== undefined &&
     obj.characterName !== undefined &&
+    obj.document !== undefined &&
+    obj.email !== undefined &&
     obj.images !== undefined &&
+    obj.name !== undefined &&
     obj.nickname !== undefined &&
     obj.origin !== undefined &&
     obj.phoneNumber !== undefined

@@ -1,5 +1,7 @@
 export interface Cosplayer {
   characterName: string;
+  document: string;
+  email: string;
   images: string[];
   name: string; // Their identifier
   nickname: string;

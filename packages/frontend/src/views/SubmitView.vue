@@ -1,73 +1,75 @@
 <script setup lang="ts">
-import { ref, type Ref } from 'vue'
-import { Api, type Cosplayer } from '@/api'
+import { ref, type Ref } from "vue";
+import { Api, type Cosplayer } from "@/api";
 
-const files: Ref<{ file: File, base64Url: string }[]> = ref([])
+const files: Ref<{ file: File; base64Url: string }[]> = ref([]);
 
-const displayError = ref(false)
-const errorMessage = ref("Um ou mais campos estão inválidos ou há campos obrigatórios não preenchidos.")
+const displayError = ref(false);
+const errorMessage = ref("Um ou mais campos estão inválidos ou há campos obrigatórios não preenchidos.");
 
-const displaySuccess = ref(false)
+const displaySuccess = ref(false);
 
 const cosplayer = ref<Cosplayer & { valid: boolean }>({
   valid: true,
   characterName: "",
+  document: "",
+  email: "",
   images: [],
   name: "",
   nickname: "",
   origin: "",
   phoneNumber: "",
-})
+});
 
 const previewFiles = (event: Event) => {
-  const eventFiles = (event.target as HTMLInputElement).files
+  const eventFiles = (event.target as HTMLInputElement).files;
 
-  if (!eventFiles?.length) return
+  if (!eventFiles?.length) return;
 
   for (const file of eventFiles) {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onloadend = () => files.value.push({ file, base64Url: reader.result as string })
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => files.value.push({ file, base64Url: reader.result as string });
   }
-}
+};
 
 const click = async () => {
   if (!cosplayer.value.valid) {
-    displayError.value = true
-    return
+    displayError.value = true;
+    return;
   }
 
-  cosplayer.value.images = files.value.map(f => f.base64Url);
+  cosplayer.value.images = files.value.map((f) => f.base64Url);
 
   Api.sendCosplayers(cosplayer.value)
     .then(() => {
-      displayError.value = false
-      displaySuccess.value = true
-      setTimeout(() => location.reload(), 3000)
+      displayError.value = false;
+      displaySuccess.value = true;
+      setTimeout(() => location.reload(), 3000);
     })
     .catch((error) => {
-      errorMessage.value = error
+      errorMessage.value = error;
 
-      displayError.value = true
-    })
-}
+      displayError.value = true;
+    });
+};
 
 const rules = {
   name: [
     (value: string) => {
-      if (value) return true
+      if (value) return true;
 
-      return "Nome é obrigatório."
-    }
+      return "Nome é obrigatório.";
+    },
   ],
   phone: [
     (value: string) => {
-      if (value.length === 11) return true
+      if (value.length === 11) return true;
 
-      return "Número inválido, deve conter 11 números."
-    }
-  ]
-}
+      return "Número inválido, deve conter 11 números.";
+    },
+  ],
+};
 </script>
 
 <template>
@@ -97,7 +99,17 @@ const rules = {
 
       <v-row>
         <v-col>
+          <v-text-field label="Endereço de e-mail" type="email" v-model="cosplayer.email" />
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col>
           <v-text-field :rules="rules.phone" label="Número de telefone com DDD*" v-model="cosplayer.phoneNumber" />
+        </v-col>
+
+        <v-col>
+          <v-text-field label="Número de documento (RG/CPF/CNH)" v-model="cosplayer.document" />
         </v-col>
       </v-row>
 
@@ -108,7 +120,7 @@ const rules = {
       </v-row>
 
       <v-row>
-        <v-col style="display: flex; justify-content: center;">
+        <v-col style="display: flex; justify-content: center">
           <v-dialog max-width="500">
             <template v-slot:activator="{ props: activatorProps }">
               <v-btn v-bind="activatorProps" size="x-large" text="Enviar" />
@@ -118,7 +130,10 @@ const rules = {
               <v-card title="Tem certeza que quer enviar?">
                 <v-card-actions>
                   <v-btn text="Não" @click="isActive.value = false" />
-                  <v-btn text="Sim" type="submit" @click="isActive.value = false; click()" />
+                  <v-btn text="Sim" type="submit" @click="
+                    isActive.value = false;
+                  click();
+                  " />
                 </v-card-actions>
               </v-card>
             </template>
