@@ -29,12 +29,24 @@ export class Api {
   }
 
   static async getCosplayers(): Promise<Cosplayer[]>;
-  static async getCosplayers(query: { order?: number; name?: string }): Promise<Cosplayer>;
-  static async getCosplayers(query?: { order?: number; name?: string }): Promise<Cosplayer[] | Cosplayer> {
+  static async getCosplayers(query: {
+    order?: number;
+    name?: string;
+    fromOrder?: number;
+    confirmedOnly?: boolean;
+  }): Promise<Cosplayer>;
+  static async getCosplayers(query?: {
+    order?: number;
+    name?: string;
+    fromOrder?: number;
+    confirmedOnly?: boolean;
+  }): Promise<Cosplayer[] | Cosplayer> {
     const queryString: string[] = [];
 
     if (query?.order) queryString.push(`order=${query.order}`);
     if (query?.name) queryString.push(`name=${query.name}`);
+    if (query?.fromOrder) queryString.push(`fromOrder=${query.fromOrder}`);
+    if (query?.confirmedOnly !== undefined) queryString.push(`confirmedOnly=${query.confirmedOnly}`);
 
     const result = await Api.fetch(`cosplayers?${queryString.join("&")}`);
 
@@ -43,6 +55,14 @@ export class Api {
     }
 
     return await result.json();
+  }
+
+  static async confirmCosplayer(order: number): Promise<void> {
+    const result = await Api.fetch(`confirm?order=${order}`);
+
+    if (!result.ok) {
+      throw new Error(`Failed confirming cosplayer: ${result.text()}`);
+    }
   }
 
   static async getWinners(): Promise<Vote[]> {
