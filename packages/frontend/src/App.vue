@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
   <header class="navbar">
     <nav>
-      <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/cosplayers">Cosplayers</RouterLink>
       <RouterLink to="/submit">Submit cosplayer</RouterLink>
+      <RouterLink to="/cosplayers">Cosplayers</RouterLink>
       <RouterLink to="/jury">Jury</RouterLink>
+      <RouterLink to="/winners">Winners</RouterLink>
     </nav>
   </header>
 
-  <div style="height: 90%; width: 90%;">
+  <div style="height: 90%; width: 90%">
     <RouterView />
   </div>
 </template>

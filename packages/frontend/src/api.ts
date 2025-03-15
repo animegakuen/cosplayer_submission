@@ -28,14 +28,8 @@ export class Api {
   }
 
   static async getCosplayers(): Promise<Cosplayer[]>;
-  static async getCosplayers(query: {
-    order?: number;
-    name?: string;
-  }): Promise<Cosplayer>;
-  static async getCosplayers(query?: {
-    order?: number;
-    name?: string;
-  }): Promise<Cosplayer[] | Cosplayer> {
+  static async getCosplayers(query: { order?: number; name?: string }): Promise<Cosplayer>;
+  static async getCosplayers(query?: { order?: number; name?: string }): Promise<Cosplayer[] | Cosplayer> {
     const queryString: string[] = [];
 
     if (query?.order) queryString.push(`order=${query.order}`);
@@ -45,6 +39,16 @@ export class Api {
 
     if (!result.ok) {
       throw new Error(`Failed fetching cosplayers: ${result.text()}`);
+    }
+
+    return await result.json();
+  }
+
+  static async getWinners(): Promise<Vote[]> {
+    const result = await Api.fetch(`winners`);
+
+    if (!result.ok) {
+      throw new Error(`Failed fetching winners: ${result.text()}`);
     }
 
     return await result.json();
