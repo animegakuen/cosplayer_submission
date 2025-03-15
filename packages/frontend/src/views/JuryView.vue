@@ -6,44 +6,48 @@ const order = ref<number>(1);
 const jury = ref<Juror[]>([]);
 const cosplayer = ref<Cosplayer>();
 const vote = ref<number>();
+const errorMessage = ref("");
+const displayError = ref(false);
 
 const selectedJuror = ref<Juror | undefined>();
 
 const selectJuror = (juror: Juror) => (selectedJuror.value = juror);
 
-const selectNextCosplayer = async (previousOrder?: number): Promise<Cosplayer | undefined> => {
-  try {
-    const currentOrder = previousOrder ?? order.value;
+const selectNextCosplayer = (previousOrder?: number): void => {
+  const currentOrder = previousOrder ?? order.value + 1;
 
-    const cosplayer = await Api.getCosplayers({ order: currentOrder });
-
-    if (!cosplayer.confirmed) return selectNextCosplayer(currentOrder + 1);
-
-    return cosplayer;
-  } catch {
-    return undefined;
-  }
+  Api.getCosplayers({ order: currentOrder })
+    .then((c) => {
+      if (!c.confirmed) selectNextCosplayer(currentOrder + 1);
+      else {
+        cosplayer.value = c;
+        order.value = c.order!;
+        console.log(order.value);
+      }
+    })
+    .catch(() => (cosplayer.value = undefined));
 };
 
-const sendVote = async () => {
+const sendVote = () => {
   if (!selectedJuror.value && !vote.value && !cosplayer.value) {
     alert("Algo de ruim aconteceu.");
     return;
   }
 
-  Api.sendVote(selectedJuror.value!, { name: cosplayer.value!.name, score: vote.value! }).catch(console.error);
+  Api.sendVote(selectedJuror.value!, { name: cosplayer.value!.name, score: vote.value! }).catch((err) => {
+    displayError.value = false;
+    errorMessage.value = err;
+  });
 
-  const nextCosplayer = await selectNextCosplayer();
-
-  cosplayer.value = nextCosplayer;
-  order.value = nextCosplayer?.order ?? 0;
+  selectNextCosplayer();
 };
 
 Api.getJury().then((j) => (jury.value = j));
-selectNextCosplayer().then((c) => (cosplayer.value = c));
+selectNextCosplayer();
 </script>
 
 <template>
+  <v-alert :text="errorMessage" title="Erro ao votar" type="error" v-if="displayError" />
   <v-container v-if="selectedJuror === undefined">
     <v-row v-for="juror in jury" :key="juror.name">
       <v-col class="jurorButton">
@@ -105,6 +109,10 @@ selectNextCosplayer().then((c) => (cosplayer.value = c));
           <v-number-input label="Pontuação" control-variant="split" :min="0" :max="10" v-model="vote" />
           <v-btn size="large" @click="sendVote">Enviar</v-btn>
         </div>
+      </v-row>
+
+      <v-row>
+        <v-btn size="large" @click="() => selectNextCosplayer()">Pular</v-btn>
       </v-row>
     </span>
 

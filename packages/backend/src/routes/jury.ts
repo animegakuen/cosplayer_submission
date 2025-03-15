@@ -62,7 +62,7 @@ app.post<{ Body: { juror: Juror; vote: Vote } }>("/vote", async (req, res) => {
   const foundVote = foundJuror.votes?.find((v) => v.name === vote.name);
 
   if (foundVote) {
-    res.code(403).send("Já existe um voto registrado a este nome.");
+    res.code(403).send("Já existe um voto registrado a este cosplayer, pule para o próximo.");
     return;
   }
 
