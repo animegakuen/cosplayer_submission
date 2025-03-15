@@ -18,6 +18,14 @@ const router = createRouter({
       component: SubmitView,
     },
     {
+      path: "/cosplayers/all",
+      name: "all_cosplayers",
+      component: CosplayersView,
+      props: {
+        all: true,
+      },
+    },
+    {
       path: "/cosplayers",
       name: "cosplayers",
       component: CosplayersView,

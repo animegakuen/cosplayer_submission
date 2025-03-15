@@ -11,6 +11,7 @@ const fetchCosplayers: () => Promise<Cosplayer[]> = async () => {
 const isCosplayer = (obj: any): obj is Cosplayer => {
   return (
     obj.characterName !== undefined &&
+    obj.confirmed !== undefined &&
     obj.document !== undefined &&
     obj.email !== undefined &&
     obj.images !== undefined &&
@@ -64,6 +65,27 @@ app.get<{ Querystring: { order?: string; name?: string } }>("/cosplayers", async
     res.send(cosplayer);
     return;
   }
+});
+
+app.get<{ Querystring: { order?: string } }>("/confirm", async (req, res) => {
+  let cosplayerData = await fetchCosplayers();
+
+  const order = Number.parseInt(req.query.order ?? "0");
+
+  if (!order || order === 0) {
+    res.code(400).send();
+    return;
+  }
+
+  cosplayerData = cosplayerData.map((c) => {
+    if (c.order === order) c.confirmed = true;
+
+    return c;
+  });
+
+  await writeFile("./cosplayers.json", JSON.stringify(cosplayerData, null, "  "));
+
+  res.code(200).send();
 });
 
 app.post<{ Body: Cosplayer }>("/cosplayers", async (req, res) => {

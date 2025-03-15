@@ -1,15 +1,21 @@
 <script setup lang="ts">
-import { Api, type Cosplayer } from '@/api';
-import { ref } from 'vue';
+import { Api, type Cosplayer } from "@/api";
+import { ref } from "vue";
 
-const cosplayers = ref<Cosplayer[]>([])
+const props = defineProps({
+  all: Boolean,
+});
 
-Api.getCosplayers().then(c => cosplayers.value = c.sort((a, b) => {
-  if (a.order! > b.order!)
-    return 1
-  else
-    return -1;
-}));
+const cosplayers = ref<Cosplayer[]>([]);
+
+Api.getCosplayers().then((c) => {
+  cosplayers.value = c
+    .filter((c) => (props.all ? true : c.confirmed))
+    .sort((a, b) => {
+      if (a.order! > b.order!) return 1;
+      else return -1;
+    });
+});
 </script>
 
 <template>

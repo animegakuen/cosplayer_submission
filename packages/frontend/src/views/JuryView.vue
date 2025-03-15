@@ -1,34 +1,46 @@
 <script setup lang="ts">
-import { Api, type Cosplayer, type Juror } from '@/api';
-import { ref } from 'vue';
+import { Api, type Cosplayer, type Juror } from "@/api";
+import { ref } from "vue";
 
-const order = ref<number>(1)
-const jury = ref<Juror[]>([])
-const cosplayer = ref<Cosplayer>()
-const vote = ref<number>()
+const order = ref<number>(1);
+const jury = ref<Juror[]>([]);
+const cosplayer = ref<Cosplayer>();
+const vote = ref<number>();
 
-const selectedJuror = ref<Juror | undefined>()
+const selectedJuror = ref<Juror | undefined>();
 
-Api.getJury().then(j => jury.value = j)
-Api.getCosplayers({ order: order.value }).then(c => cosplayer.value = c)
+const selectJuror = (juror: Juror) => (selectedJuror.value = juror);
 
-const selectJuror = (juror: Juror) => selectedJuror.value = juror
+const selectNextCosplayer = async (previousOrder?: number): Promise<Cosplayer | undefined> => {
+  try {
+    const currentOrder = previousOrder ?? order.value;
 
-const sendVote = () => {
+    const cosplayer = await Api.getCosplayers({ order: currentOrder });
+
+    if (!cosplayer.confirmed) return selectNextCosplayer(currentOrder + 1);
+
+    return cosplayer;
+  } catch {
+    return undefined;
+  }
+};
+
+const sendVote = async () => {
   if (!selectedJuror.value && !vote.value && !cosplayer.value) {
-    alert("Algo de ruim aconteceu.")
+    alert("Algo de ruim aconteceu.");
     return;
   }
 
-  Api
-    .sendVote(selectedJuror.value!, { name: cosplayer.value!.name, score: vote.value! })
-    .catch(console.error)
+  Api.sendVote(selectedJuror.value!, { name: cosplayer.value!.name, score: vote.value! }).catch(console.error);
 
-  order.value += 1
-  Api
-    .getCosplayers({ order: order.value }).then(c => cosplayer.value = c)
-    .catch(() => cosplayer.value = undefined)
-}
+  const nextCosplayer = await selectNextCosplayer();
+
+  cosplayer.value = nextCosplayer;
+  order.value = nextCosplayer?.order ?? 0;
+};
+
+Api.getJury().then((j) => (jury.value = j));
+selectNextCosplayer().then((c) => (cosplayer.value = c));
 </script>
 
 <template>
@@ -96,9 +108,7 @@ const sendVote = () => {
       </v-row>
     </span>
 
-    <v-row v-if="cosplayer === undefined">
-      Acabaram os cosplayers!
-    </v-row>
+    <v-row v-if="cosplayer === undefined"> Acabaram os cosplayers! </v-row>
   </v-container>
 </template>
 
@@ -132,7 +142,7 @@ span .v-row {
 }
 
 .text-h6 {
-  color: var(--ctp-frappe-peach)
+  color: var(--ctp-frappe-peach);
 }
 
 .buttons {

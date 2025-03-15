@@ -1,5 +1,6 @@
 export interface Cosplayer {
   characterName: string;
+  confirmed: boolean; // Whether they have showed up to confirm their entry.
   document: string;
   email: string;
   images: string[];

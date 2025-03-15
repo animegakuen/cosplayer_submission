@@ -15,6 +15,7 @@ const displaySuccess = ref(false);
 
 const cosplayer = ref<Cosplayer & { valid: boolean }>({
   valid: true,
+  confirmed: false,
   characterName: "",
   document: "",
   email: "",
@@ -29,6 +30,7 @@ if (props.order) {
   Api.getCosplayers({ order: props.order }).then((c) => {
     cosplayer.value = {
       valid: true,
+      confirmed: c.confirmed,
       characterName: c.characterName,
       document: c.document,
       email: c.email,
