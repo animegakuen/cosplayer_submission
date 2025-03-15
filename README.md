@@ -76,6 +76,8 @@ Returns the following codes:
 ```typescript
 export interface Cosplayer {
   characterName: string;
+  document: string;      // A legal document number that represents them.
+  email: string;
   images: string[];      // Base64 encoded images.
   name: string;          // Their identifier.
   nickname: string;      // Optional "stage name"/nickname.
@@ -108,8 +110,8 @@ export interface Juror {
 This package is powered by [Vue](https://vuejs.org/) and [Vite](https://vite.dev/) with a very simple front-end.
 
 There are three pages:
-- `/` & `/cosplayers` - which shows in a grid list all the registered cosplayers.
-- `/submit` - where you can submit a cosplayer to be added.
+- `/` & `/submit` - where you can submit a cosplayer to be added.
+- `/cosplayers` - which shows in a grid list all the registered cosplayers.
 - `/jury` - that a juror can access to cast votes.
 
 Since it is a quite simple front-end we will not document much, but, beware that many components are in Brazilian
