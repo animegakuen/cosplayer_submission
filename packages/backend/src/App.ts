@@ -1,4 +1,4 @@
-import fastify, { type FastifyInstance } from "fastify";
+import fastify, { type FastifyReply, type FastifyInstance } from "fastify";
 
 export class AppSingleton {
   private static _instance: AppSingleton;
@@ -11,10 +11,7 @@ export class AppSingleton {
 
     // Enable CORS
     this.app.addHook("preHandler", (req, reply, done) => {
-      reply.header("Access-Control-Allow-Headers", "Content-Type");
-      reply.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-      reply.header("Access-Control-Allow-Origin", "*");
-      reply.header("Access-Control-Max-Age", "86400");
+      this.addCors(reply);
 
       if (/options/i.test(req.method)) {
         return reply.send();
@@ -24,13 +21,17 @@ export class AppSingleton {
     });
 
     this.app.addHook("onSend", (_request, reply, _payload, done) => {
-      reply.header("Access-Control-Allow-Headers", "Content-Type");
-      reply.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-      reply.header("Access-Control-Allow-Origin", "*");
-      reply.header("Access-Control-Max-Age", "86400");
+      this.addCors(reply);
 
       done();
-    })
+    });
+  }
+
+  public addCors(reply: FastifyReply): void {
+    reply.header("Access-Control-Allow-Headers", "Content-Type");
+    reply.header("Access-Control-Allow-Methods", "POST, GET, PATCH, OPTIONS");
+    reply.header("Access-Control-Allow-Origin", "*");
+    reply.header("Access-Control-Max-Age", "86400");
   }
 
   public static get instance() {

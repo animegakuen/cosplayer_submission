@@ -58,7 +58,13 @@ export class Api {
   }
 
   static async confirmCosplayer(order: number): Promise<void> {
-    const result = await Api.fetch(`confirm?order=${order}`);
+    const result = await Api.fetch(`confirm`, {
+      method: "PATCH",
+      body: JSON.stringify({ order }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     if (!result.ok) {
       throw new Error(`Failed confirming cosplayer: ${result.text()}`);

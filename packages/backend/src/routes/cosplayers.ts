@@ -99,10 +99,10 @@ app.get<{ Querystring: { order?: string; name?: string; fromOrder?: string; conf
   },
 );
 
-app.get<{ Querystring: { order?: string } }>("/confirm", async (req, res) => {
+app.patch<{ Body: { order?: string } }>("/confirm", async (req, res) => {
   let cosplayerData = await fetchCosplayers();
 
-  const order = Number.parseInt(req.query.order ?? "0");
+  const order = Number.parseInt(req.body.order ?? "0");
 
   if (!order || order === 0) {
     res.code(400).send();
