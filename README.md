@@ -16,7 +16,6 @@ different port, you can change [this line](packages/backend/src/index.ts#L11).
 For the application to run correctly you must also at runtime have two relative files for data collection:
 `cosplayers.json` and `jury.json`, both containing an empty array inside.
 
-
 ### Endpoints
 
 The following sections are the routes currently available.
@@ -31,6 +30,11 @@ This endpoint optionally can receive the following query parameters to search a 
   - _The registration number of a cosplayer._
 - `name`
   - _The exact name of a cosplayer._
+- `fromOrder`
+  - _Look ahead search from starting from the passed number._
+- `confirmedOnly`
+  - _When "true" all cosplayers sent when there is no query parameters or `fromOrder` is set, will filter cosplayers
+  which are not in the "confirmed" state._
 
 #### POST `/cosplayers`
 
@@ -45,6 +49,16 @@ Returns the following codes:
   - _If it fails to write to the relative path `./cosplayers.json`._
 - `200`
   - _If everything is correct and the cosplayer is written._
+
+#### PATCH `/confirm`
+
+_Expects a JSON containing an object with a field `order` and value representing a number._
+
+Returns the following codes:
+- `400`
+  - _If the `order` field passed is an invalid number._
+- `200`
+  - _If everything is correct and the file is updated._
 
 #### GET `/jury`
 
@@ -76,6 +90,7 @@ Returns the following codes:
 ```typescript
 export interface Cosplayer {
   characterName: string;
+  confirmed: boolean;    // Whether they have showed up to confirm their entry.
   document: string;      // A legal document number that represents them.
   email: string;
   images: string[];      // Base64 encoded images.
@@ -111,8 +126,11 @@ This package is powered by [Vue](https://vuejs.org/) and [Vite](https://vite.dev
 
 There are three pages:
 - `/` & `/submit` - where you can submit a cosplayer to be added.
-- `/cosplayers` - which shows in a grid list all the registered cosplayers.
+- `/cosplayers` - which shows in a grid list all the registered cosplayers that have confirmed their presence.
+- `/cosplayers/all` - which shows in a grid list all the registered cosplayers and allows to confirm a cosplayer's
+presence.
 - `/jury` - that a juror can access to cast votes.
+- `/winners` - which show a list of cosplayers' names and mean scores, sorted by highest mean score to lowest.
 
 Since it is a quite simple front-end we will not document much, but, beware that many components are in Brazilian
 Portuguese, as that's our audience. The `/submit` route for example expects on it's submission a Brazilian mobile phone
