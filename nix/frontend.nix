@@ -6,7 +6,7 @@
 
 stdenv.mkDerivation rec {
   pname = "animegakuen-cosplay-frontend";
-  version = "0-unstable-2025-03-05";
+  version = "0-unstable-2025-03-15";
   src = ../.;
 
   nativeBuildInputs = [

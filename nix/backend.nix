@@ -6,7 +6,7 @@
 
 stdenv.mkDerivation rec {
   pname = "animegakuen-cosplay-backend";
-  version = "0-unstable-2025-03-05";
+  version = "0-unstable-2025-03-15";
   src = ../.;
 
   nativeBuildInputs = [
@@ -41,7 +41,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/{bin,lib/cosplayer_submission}
 
     cp -r {packages,node_modules} $out/lib/cosplayer_submission
-    ln -s $out/lib/cosplayer_submission/packages/backend/bin/start.js $out/bin/cosplayer_submission
+    ln -s $out/lib/cosplayer_submission/packages/backend/bin/start.js $out/bin/animegakuen-cosplay-backend
 
     runHook postInstall
   '';
