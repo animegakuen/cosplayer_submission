@@ -76,7 +76,7 @@ app.get<{ Querystring: { order?: string; name?: string; fromOrder?: string; conf
       const fromOrderNumber = Number.parseInt(fromOrder);
 
       const findNextCosplayer = (nextOrder: number) => {
-        if (nextOrder + 1 > cosplayerData.length) {
+        if (nextOrder > cosplayerData.length) {
           res.code(404).send();
           return;
         }
@@ -88,7 +88,7 @@ app.get<{ Querystring: { order?: string; name?: string; fromOrder?: string; conf
         return nextCosplayer;
       };
 
-      if (fromOrderNumber + 1 > cosplayerData.length) {
+      if (fromOrderNumber > cosplayerData.length) {
         res.code(404).send();
         return;
       }
