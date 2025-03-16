@@ -9,7 +9,7 @@ const props = defineProps({
 const cosplayers = ref<Cosplayer[]>([]);
 
 const loadCosplayers = (nextOrder?: number) => {
-  const orderNumber = nextOrder ? nextOrder + 1 : 1;
+  const orderNumber = nextOrder ? nextOrder + 1 : 0;
 
   Api.getCosplayers({ fromOrder: orderNumber, confirmedOnly: !props.all })
     .then((c) => {

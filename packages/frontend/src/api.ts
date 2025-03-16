@@ -45,7 +45,7 @@ export class Api {
 
     if (query?.order) queryString.push(`order=${query.order}`);
     if (query?.name) queryString.push(`name=${query.name}`);
-    if (query?.fromOrder) queryString.push(`fromOrder=${query.fromOrder}`);
+    if (query?.fromOrder !== undefined) queryString.push(`fromOrder=${query.fromOrder}`);
     if (query?.confirmedOnly !== undefined) queryString.push(`confirmedOnly=${query.confirmedOnly}`);
 
     const result = await Api.fetch(`cosplayers?${queryString.join("&")}`);
